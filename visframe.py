@@ -21,7 +21,7 @@ Frame = namedtuple('Frame', ['position', 'shape'])
 
 
 def allocate_frames(canvas_shape, border_size):
-    height, width = canvas_shape
+    width, height = canvas_shape
 
     pad_size    = border_size // 20
     frame_size  = border_size - 2 * pad_size
@@ -87,8 +87,10 @@ def interface(old_im, vis_im, x, y):
                           (canvas_shape[1]-orig_shape[1])//2))
 
     frames = allocate_frames(canvas_shape, border_size)
-    target = nearest_frame(position, frames)
-    new_im = paste_into_frame(new_im, target, vis_im)
+
+    for _ in range(15):
+        target = nearest_frame(position, frames)
+        new_im = paste_into_frame(new_im, target, vis_im)
 
     new_im.save('output.png', 'PNG')
 
