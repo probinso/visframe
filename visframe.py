@@ -89,7 +89,7 @@ def interface(old_im, *regions):
 
     frames = allocate_frames(canvas_shape, border_size)
 
-    for region in (Region(**i) for i in regions):
+    for region in regions:
         pos    = Point(region.x + border_size, region.y + border_size)
         target = nearest_frame(pos, frames)
         vis_im = Image.open(region.visualization)
@@ -116,7 +116,7 @@ def cli():
     except Exception as e:
         print("Usage {} <image-file> <regions.json>".format(argv[0]), file=stderr)
         exit(1)
-    interface(old_im, *regions)
+    interface(old_im, *(Region(**i) for i in regions))
 
 
 if __name__ == '__main__':
