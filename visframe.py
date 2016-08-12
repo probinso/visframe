@@ -5,6 +5,18 @@ from sys  import argv, stderr
 from json import load
 from itertools   import islice
 from collections import namedtuple, defaultdict
+from functools   import wraps
+
+import numpy as np
+
+def coroutine(func):
+    @wraps(func)
+    def start(*args,**kwargs):
+        cr = func(*args,**kwargs)
+        _ = next(cr)
+        return cr
+    return start
+
 
 def window(iterable, size):
     it = iter(iterable)
@@ -18,7 +30,7 @@ def window(iterable, size):
 
 
 Point  = namedtuple('Point',  ['x', 'y'])
-Region = namedtuple('Region', ['x', 'y', 'bounding_box', 'visualization'])
+Region = namedtuple('Region', ['x', 'y', 'bbox_loc', 'bbox_shape', 'visualization'])
 Frame  = namedtuple('Frame',  ['position', 'shape'])
 
 
@@ -58,7 +70,7 @@ def corners(frame):
     top_right = Point(top_left.x + frame.shape[0], top_left.y)
     bot_left  = Point(top_left.x, top_left.y + frame.shape[1])
     bot_right = Point(top_left.x + frame.shape[0], top_left.y + frame.shape[1])
-    return (top_left, top_right, bot_left, bot_right)
+    return top_left, top_right, bot_left, bot_right
 
 
 def nearest_frame(pos, frames):
@@ -89,24 +101,38 @@ def interface(old_im, *regions):
 
     frames = allocate_frames(canvas_shape, border_size)
 
+    context = paste_into_frame(new_im, len(regions))
     for region in regions:
         pos    = Point(region.x + border_size, region.y + border_size)
         target = nearest_frame(pos, frames)
         vis_im = Image.open(region.visualization)
-        new_im = paste_into_frame(new_im, vis_im, target, pos)
+
+        bbox_loc = Point(*map(lambda x: x + border_size, region.bbox_loc))
+        b_box    = Frame(position=bbox_loc, shape=region.bbox_shape)
+
+        context.send((vis_im, target, pos, b_box))
 
     new_im.save('output.png', 'PNG')
 
 
-def paste_into_frame(canvas, vis_im, target, position):
-    frame, nearest_corner = target
-    vis_im = vis_im.resize(frame.shape, Image.ANTIALIAS)
-    canvas.paste(vis_im, frame.position)
+from matplotlib.pyplot import cm
 
+
+@coroutine
+def paste_into_frame(canvas, count):
+    color_selection=cm.rainbow(np.linspace(0,1,count+1))
     draw = ImageDraw.Draw(canvas)
-    draw.line(nearest_corner + position, fill=128, width=3)
+    for color in (tuple(map(int,c*255)) for c in color_selection):
+        print(color)
+        vis_im, target, position, b_box = (yield)
+        frame, nearest_corner = target
 
-    return canvas
+        vis_im = vis_im.resize(frame.shape, Image.ANTIALIAS)
+        canvas.paste(vis_im, frame.position)
+
+        draw.line(nearest_corner + position, fill=color, width=3)
+        t, *_, l = corners(b_box)
+        draw.rectangle([t, l], outline=color)
 
 
 def cli():
