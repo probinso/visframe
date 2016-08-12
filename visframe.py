@@ -21,7 +21,6 @@ def coroutine(func):
 
 def window(iterable, size):
     it = iter(iterable)
-    
     result = tuple(islice(it, size))
     if len(result) == size:
         yield result
