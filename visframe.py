@@ -6,6 +6,7 @@ from json import load
 from itertools   import islice
 from collections import namedtuple, defaultdict
 from functools   import wraps
+from matplotlib.pyplot import cm
 
 import numpy as np
 
@@ -113,9 +114,6 @@ def interface(old_im, *regions):
         context.send((vis_im, target, pos, b_box))
 
     new_im.save('output.png', 'PNG')
-
-
-from matplotlib.pyplot import cm
 
 
 @coroutine
