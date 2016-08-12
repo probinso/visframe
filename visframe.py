@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from PIL  import Image, ImageDraw
+from PIL  import Image, ImageDraw, ImageOps
 from sys  import argv, stderr
 from json import load
 from itertools   import islice
@@ -94,7 +94,7 @@ def interface(old_im, *regions):
     border_size = 200
 
     canvas_shape = tuple(map(lambda x: x + 2*border_size, orig_shape))
-    new_im = Image.new("RGB", canvas_shape) # luckily, this is already black!
+    new_im = Image.new("RGB", canvas_shape)
 
     new_im.paste(old_im, ((canvas_shape[0]-orig_shape[0])//2,
                           (canvas_shape[1]-orig_shape[1])//2))
@@ -128,9 +128,10 @@ def paste_into_frame(canvas, count):
         frame, nearest_corner = target
 
         vis_im = vis_im.resize(frame.shape, Image.ANTIALIAS)
+        vis_im = ImageOps.expand(vis_im, border=3, fill=color)
         canvas.paste(vis_im, frame.position)
 
-        draw.line(nearest_corner + position, fill=color, width=3)
+        draw.line(nearest_corner + position, fill=color, width=2)
         t, *_, l = corners(b_box)
         draw.rectangle([t, l], outline=color)
 
