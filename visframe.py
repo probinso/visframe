@@ -120,7 +120,6 @@ def paste_into_frame(canvas, count):
     color_selection=cm.rainbow(np.linspace(0,1,count+1))
     draw = ImageDraw.Draw(canvas)
     for color in (tuple(map(int,c*255)) for c in color_selection):
-        print(color)
         vis_im, target, position, b_box = (yield)
         frame, nearest_corner = target
 
