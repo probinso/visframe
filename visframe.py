@@ -6,9 +6,10 @@ from json import load
 from itertools   import islice
 from collections import namedtuple, defaultdict
 from functools   import wraps
-from matplotlib.pyplot import cm
 
+from matplotlib.pyplot import cm
 import numpy as np
+
 
 def coroutine(func):
     @wraps(func)
@@ -137,7 +138,7 @@ def cli():
         with open(argv[2]) as fd:
             old_im, regions = Image.open(argv[1]), (Region(**i) for i in load(fd))
     except Exception as e:
-        print("Usage {} <image-file> <regions.json>".format(argv[0]), file=stderr)
+        print("Usage: {} <image-file> <regions.json>".format(argv[0]), file=stderr)
         exit(1)
     interface(old_im, *regions)
 
