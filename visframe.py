@@ -7,8 +7,7 @@ from itertools   import islice
 from collections import namedtuple, defaultdict
 from functools   import wraps
 
-from matplotlib.pyplot import cm
-import numpy as np
+from colour import Color
 
 
 def coroutine(func):
@@ -118,9 +117,11 @@ def interface(old_im, *regions):
 
 @coroutine
 def paste_into_frame(canvas, count):
-    color_selection=cm.rainbow(np.linspace(0,1,count+1))
+    color_selection=Color('red').range_to(Color('purple'), count+1)
     draw = ImageDraw.Draw(canvas)
-    for color in (tuple(map(int,c*255)) for c in color_selection):
+    transform = lambda c: tuple(map(int, map(lambda x: x * 255, c.rgb)))
+
+    for color in (transform(c) for c in color_selection):
         vis_im, target, position, b_box = (yield)
         frame, nearest_corner = target
 
