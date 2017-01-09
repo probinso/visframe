@@ -136,8 +136,9 @@ def paste_into_frame(canvas, count):
 def cli():
     try:
         with open(argv[2]) as fd:
-            old_im, regions = Image.open(argv[1]), (Region(**i) for i in load(fd))
+            old_im, regions = Image.open(argv[1]), [Region(**i) for i in load(fd)]
     except Exception as e:
+        print(e)
         print("Usage {} <image-file> <regions.json>".format(argv[0]), file=stderr)
         exit(1)
     interface(old_im, *regions)
