@@ -1,31 +1,31 @@
 [
     {"x":50, "y":50,
-     "visualization":"/home/probinso/Pictures/LYRISSA.jpg",
+     "visualization":"./pictures/nubian print.png",
      "bbox_loc":[20,20],
      "bbox_shape":[40,40]
     },
     {"x":100, "y":100,
-     "visualization":"/home/probinso/Pictures/LYRISSA.jpg",
+     "visualization":"./pictures/agave lover print.png",
      "bbox_loc":[80,80],
      "bbox_shape":[40,40]
     },
     {"x":150, "y":150,
-     "visualization":"/home/probinso/Pictures/LYRISSA.jpg",
+     "visualization":"./pictures/melons! print.png",
      "bbox_loc":[130,130],
      "bbox_shape":[40,40]
     },
     {"x":300, "y":300,
-     "visualization":"/home/probinso/Pictures/1231985081761.jpg",
+     "visualization":"./pictures/agave lover print.png",
      "bbox_loc":[290,290],
      "bbox_shape":[20,20]
     },
     {"x":350, "y":350,
-     "visualization":"/home/probinso/Pictures/1231985081761.jpg",
+     "visualization":"./pictures/nubian print.png",
      "bbox_loc":[300,300],
      "bbox_shape":[60,60]
     },
     {"x":160, "y":60,
-     "visualization":"/home/probinso/Pictures/1231985081761.jpg",
+     "visualization":"./pictures/melons! print.png",
      "bbox_loc":[70,50],
      "bbox_shape":[100,100]
     }
