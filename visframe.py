@@ -89,6 +89,25 @@ def nearest_frame(pos, frames):
     return frame, min(corners(frame), key=sq_dist)
 
 
+@coroutine
+def paste_into_frame(canvas, count):
+    color_selection=Color('red').range_to(Color('purple'), count+1)
+    draw = ImageDraw.Draw(canvas)
+    transform = lambda c: tuple(map(int, map(lambda x: x * 255, c.rgb)))
+
+    for color in (transform(c) for c in color_selection):
+        vis_im, target, position, b_box = (yield)
+        frame, nearest_corner = target
+
+        vis_im = vis_im.resize(frame.shape, Image.ANTIALIAS)
+        vis_im = ImageOps.expand(vis_im, border=3, fill=color)
+        canvas.paste(vis_im, frame.position)
+
+        draw.line(nearest_corner + position, fill=color, width=2)
+        t, *_, l = corners(b_box)
+        draw.rectangle([t, l], outline=color)
+
+
 def interface(old_im, *regions):
     orig_shape  = old_im.size
     border_size = 200
@@ -115,31 +134,11 @@ def interface(old_im, *regions):
     new_im.save('output.png', 'PNG')
 
 
-@coroutine
-def paste_into_frame(canvas, count):
-    color_selection=Color('red').range_to(Color('purple'), count+1)
-    draw = ImageDraw.Draw(canvas)
-    transform = lambda c: tuple(map(int, map(lambda x: x * 255, c.rgb)))
-
-    for color in (transform(c) for c in color_selection):
-        vis_im, target, position, b_box = (yield)
-        frame, nearest_corner = target
-
-        vis_im = vis_im.resize(frame.shape, Image.ANTIALIAS)
-        vis_im = ImageOps.expand(vis_im, border=3, fill=color)
-        canvas.paste(vis_im, frame.position)
-
-        draw.line(nearest_corner + position, fill=color, width=2)
-        t, *_, l = corners(b_box)
-        draw.rectangle([t, l], outline=color)
-
-
 def cli():
     try:
         with open(argv[2]) as fd:
             old_im, regions = Image.open(argv[1]), [Region(**i) for i in load(fd)]
     except Exception as e:
-        print(e)
         print("Usage: {} <image-file> <regions.json>".format(argv[0]), file=stderr)
         exit(1)
     interface(old_im, *regions)
